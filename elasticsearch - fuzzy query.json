@@ -4,26 +4,27 @@
 // will produce zero results but with fuzzy query enabled
 // we can allow 1 - x number of misspeliing 
 
-curl -X GET "localhost:9200/movies/_search?pretty" -d'
-
+GET kibana_sample_data_flights/_search
 {
 	"query" : {
-		"match": {"title": "intersteller"}
+		"match": {"DestWeather": "Damaging Wing"}
 	}
 }
-
-' 
+ 
  // >> output - 0
 
- curl -X GET "localhost:9200/movies/_search?pretty" -d'
-
+GET kibana_sample_data_flights/_search
 {
-	"query" : {
-		"fuzzy" : {
-			"title": {"value": "intersteller", "fuzziness": 1}
+	"query": {
+		"fuzzy": {
+			"DestWeather": {
+				"fuzziness": 2,
+				"value": "Damaging Wing"
+			}
+		}
 	}
 }
-}
+
 
 ' 
 // >> output - fixed

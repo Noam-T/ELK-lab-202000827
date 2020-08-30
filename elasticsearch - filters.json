@@ -1,29 +1,75 @@
 elasticsearch - filters
 
-curl -X GET "localhost:9200/movies/_search?pretty" -d'
+GET kibana_sample_data_flights/_search
 {
   "query": {
     "bool": {
-      "must": { "match": {"genre": "Sci-Fi"}},
-      "must_not": { "match": {"title": "trek"}},
-      "filter": {"range": {"year": {"gte": "2010","lt": "2015"}}}
-      }
+      "must": [
+        {
+          "match": {
+            "OriginCountry": "US"
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "match": {
+            "dayOfWeek": "2"
+          }
+        }
+      ],
+      "filter": [
+        {
+          "range": {
+            "DistanceMiles": {
+              "gte": 10,
+              "lte": 5000
+            }
+          }
+        }
+      ]
     }
   }
-'
+}
 
 
 
-curl -X GET "localhost:9200/movies/_search?pretty" -d'
+
+GET kibana_sample_data_flights/_search
 {
   "query": {
     "bool": {
-      "must": { "match": {"genre": "Sci-Fi"}},
-    
-      "filter": {"range": {"year": {"lt": "1960"}}}
-   
+      "must": [
+        {
+          "match": {
+            "OriginCountry": "US"
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "match": {
+            "dayOfWeek": "2"
+          }
+        }
+      ],
+      "filter": [
+        {
+          "range": {
+            "DistanceMiles": {
+              "gte": 10,
+              "lte": 5000
+            }
+          }
+        }
+      ]
+    }
+  },
+  "sort": [
+    {
+      "Dest.raw": {
+        "order": "desc"
       }
-    },
-  "sort" : "title.raw"
-  }
-'
+    }
+  ]
+}

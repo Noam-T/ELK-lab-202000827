@@ -1,75 +1,46 @@
 //  Search with bool where it must have a term "title" = trek
 //  and use filter - to filter the range of years greater then 2010
-curl -X GET "localhost:9200/movies/_search?pretty" -d'
+// match_phrase query &  with boolen and filter 
+
+GET kibana_sample_data_flights/_search
 {
   "query": {
     "bool": {
       "must": {
         "term": {
-          "title": "trek"
+          "DestWeather": "Rain"
         }
       },
       "filter": {
         "range": {
-          "year": {
-            "gte": "2010"
+          "DistanceKilometers": {
+            "gte": "600"
           }
         }
       }
     }
   }
 }
-
-
-
-
-
-curl -X GET "localhost:9200/movies/_search?pretty" -d'
-{
-	"query": {
-		"match": {
-			"title" : "star wars"
-		}
-	}
-}
-'
-
-
-// match_phrase query &  with boolen and filter 
-
-curl -X GET "localhost:9200/movies/_search?pretty" -d'
-{
-  "query": {
-    "bool": {
-      "must": {
-        "match_phrase": {
-          "title": "Star Wars"
-        }
-      },
-      "filter": {
-        "range": {
-          "year": {
-            "gte": "1980"
-          }
-        }
-      }
-    }
-  }
-}
-'
-
 
 // Match_pharse query - to match the exact pharse
 
-curl -X GET "localhost:9200/movies/_search?pretty" -d'
+GET kibana_sample_data_flights/_search
 {
-	"query": {
-		"match": {
-			"title" : "star wars"
-		}
-	}
+  "query": {
+    "match": {
+      "FlightDelayType": "Carrier Delay"
+    }
+  }
 }
-'
+
+
+
+
+
+
+
+
+
 
 
 
@@ -83,24 +54,27 @@ curl -X GET "localhost:9200/movies/_search?pretty" -d'
 // "start * beyond", "start beyond *"
 
 
-curl -X GET "localhost:9200/movies/_search?pretty" -d'
+GET kibana_sample_data_flights/_search
 {
   "query": {
     "match_phrase": {
-      "title": { "query": "star beyond", "slop": "1" }
+      "FlightDelayType": {
+        "query": "Carrier Delay", "slop": "1"
+      }
     }
   }
-}'
-
+}
 
 
 //  Proxmity query - get all the documents where those two keywords are in a document
 // in a distance of up to 100 words 
-curl -X GET "localhost:9200/movies/_search?pretty" -d'
+GET kibana_sample_data_flights/_search
 {
   "query": {
     "match_phrase": {
-      "title": { "query": "star beyond", "slop": "100" }
+      "FlightDelayType": {
+        "query": "Carrier Delay", "slop": "100"
+      }
     }
   }
-}'
+}

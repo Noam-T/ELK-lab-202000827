@@ -2,7 +2,7 @@
 // URI BASE
 #curl -X GET "localhost:9200/movies/_search?pretty&sort=year"
 
-GET kibana_sample_data_flights/_search
+GET my_kibana_sample_data_flights/_search
 {
 	"query": {
 		"bool": {
@@ -40,7 +40,7 @@ GET kibana_sample_data_flights/_search
 #
 #'
 
-GET kibana_sample_data_flights/_search
+GET my_kibana_sample_data_flights/_search
 {
 	"query": {
 		"match": {
@@ -61,64 +61,80 @@ GET kibana_sample_data_flights/_search
 // Sort by a title - But our title is using analyzer which mean we cant sort it
 // Solution is to crete in our mapping a keyword field instead. 
 
-curl -X GET "localhost:9200/movies/_search?pretty" -d'
+#curl -X GET "localhost:9200/movies/_search?pretty" -d'
 
+#{
+#	"from" : 2,
+#	"size" : 2,
+#	"query" : {
+#		"match": {"genre": "Sci-Fi"}
+#	},
+#	"sort" : "title"
+#}
+
+#'  // >> Will break with an error due to it being a text field 
+
+GET my_kibana_sample_data_flights/_search
 {
 	"from" : 2,
 	"size" : 2,
 	"query" : {
-		"match": {"genre": "Sci-Fi"}
+		"match": {"Origin": "Frankfurt am Main Airport"}
 	},
-	"sort" : "title"
+	"sort" : "Dest"
 }
-
-'  // >> Will break with an error due to it being a text field 
 
 // the Solution is the following mapping (we need to do it beforehand 
 //	as we cant change it on running)
 1. Delete the Index -  curl -XDELETE localhost:9200/movies
 2. Create the new one
-curl -X PUT "localhost:9200/movies/" -d'
+
+PUT my_kibana_sample_data_flights
 {
   "mappings": {
-    "movie": {
-      "properties": {
-        "id": {
-          "type": "date"
-        },
-        "year": {
-          "type": "date"
-        },
-        "genre": {
-          "type": "keyword"
-        },
-        "title": {
-          "type": "text",
-          "analyzer": "english",
-          "fields": {
+    "properties": {
+      "FlightNum":{
+        "type": "text"
+      },
+      "DistanceMiles":{
+        "type": "float"
+      },
+      "Dest":{
+        "type": "text",
+        "analyzer": "english"
+         "fields": {
             "raw": {
               "type": "keyword"
-            }
-          }
+            }      }
+    }
+  },
+    "settings": {
+    "analysis": {
+      "analyzer": {
+        "autocomplete": {
+          "tokenizer": "autocomplete",
+          "filter": [
+            "lowercase"
+          ]
+        },
+        "autocomplete_search": {
+          "tokenizer": "lowercase"
+        }
+      },
+      "tokenizer": {
+        "autocomplete": {
+          "type": "edge_ngram",
+          "min_gram": 2,
+          "max_gram": 10,
+          "token_chars": [
+            "letter"
+          ]
         }
       }
     }
   }
 }
-'
-3. Show the new mapping - curl -X GET "localhost:9200/movies/_mapping?pretty"
-4. Bulk load the data
-5. Run the sort again on the TITLE.RAW field
 
-
-curl -X GET "localhost:9200/movies/_search?pretty" -d'
-
-{
-	"query" : {
-		"match": {"genre": "Sci-Fi"}
-	},
-	"sort" : "title.raw" 
-}
 
 
 

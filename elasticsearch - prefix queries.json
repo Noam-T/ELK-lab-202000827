@@ -9,48 +9,42 @@
 curl -XDELETE localhost:9200/movies
 
 // 2. Create new index mapping with type keyword for year
-
-curl -X PUT "localhost:9200/movies" -d ' 
-{
+PUT my_kibana_sample_data_flights
+  {
 	"mappings" : {
-		"movie" : {
 			"properties": {
-				"year": {
-					"type" : "keyword" // Changed year to keyword type
+				"Dest": {
+					"type" : "keyword"
 				}
 			}
-		}
 	}
-}
-	'
-
 
 // 3. validate mapping 
-curl -X GET "localhost:9200/_mapping/movie?pretty"
+#curl -X GET "localhost:9200/_mapping/movie?pretty"
 
 // 4. bulk load the movies again (check init-elasticsearch folder)
 ///////
 
 //5. prefix base query
-curl -X GET "localhost:9200/movies/_search?pretty" -d'
+GET my_kibana_sample_data_flights/_search
 { 
 	"query" : {
-		"prefix": {
-			"year": "201" // get all the movies with year starting at 201..
-		}
+	  "prefix": {
+	    "Dest": {
+	      "value": "Il"
+	    }
+	  }
 	}
-
 }
-'
 
 //6. wildcard
-curl -X GET "localhost:9200/movies/_search?pretty" -d'
+GET my_kibana_sample_data_flights/_search
 { 
 	"query" : {
-		"wildcard": {
-			"year": "19*9" // get all the movies with year 19*9 (1909 - 1999)
-		}
+	  "wildcard": {
+	    "Dest": {
+	      "value": "Il*"
+	    }
+	  }
 	}
-
 }
-'
